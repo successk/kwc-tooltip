@@ -1,0 +1,26 @@
+{
+  "name": "kwc-tooltip",
+  "version": "1.0.0",
+  "description": "Tooltip as web component",
+  "license": "MIT",
+  "main": "kwc-tooltip.html",
+  "keywords": [
+    "polymer",
+    "web-component",
+    "Tooltip"
+  ],
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "homepage": "https://github.com/successk/kwc-tooltip",
+  "authors": [
+    "Gaëtan Rizio <gaetan@rizio.fr>"
+  ]
+}
