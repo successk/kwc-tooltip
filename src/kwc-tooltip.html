@@ -1,24 +1,21 @@
-<link rel="import" href="../polymer/polymer.html">
+<template id="kwc-tooltip">
+  <style>
+    /* Waiting for :host be corrected on polyfill. */
+    .host {
+      border-bottom: 1px dotted #555555;
+      cursor: help;
+    }
 
-<dom-module id="kwc-tooltip">
-  <template>
-    <style>
-      :host {
-        border-bottom: 1px dotted #555555;
-        cursor: help;
-      }
+    #description {
+      position: absolute;
+      background-color: black;
+      color: white;
+      display: none;
+      padding: 0.5rem;
+    }
+  </style>
+  <span class="host"><slot></slot></span>
+  <div id="description"></div>
+</template>
 
-      #description {
-        position: absolute;
-        background-color: black;
-        color: white;
-        display: none;
-        padding: 0.5rem;
-      }
-    </style>
-    <content></content>
-    <div id="description"></div>
-  </template>
-
-  <script src="kwc-tooltip.js" inline></script>
-</dom-module>
+<script src="kwc-tooltip.js" inline></script>

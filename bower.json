@@ -5,7 +5,6 @@
   "license": "MIT",
   "main": "kwc-tooltip.html",
   "keywords": [
-    "polymer",
     "web-component",
     "Tooltip"
   ],
@@ -17,7 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0"
+    "kwc-common": "^0.1.0"
   },
   "homepage": "https://github.com/successk/kwc-tooltip",
   "authors": [

@@ -5,10 +5,10 @@ const gutil = require("gulp-util");
 const watch = require("gulp-watch");
 const babel = require("gulp-babel");
 const webserver = require("gulp-webserver");
-var uglify = require("gulp-uglify");
 var minifyInline = require("gulp-minify-inline");
 var htmlmin = require("gulp-htmlmin");
 var inlinesource = require("gulp-inline-source");
+var jsmin = require('gulp-jsmin');
 
 /// Constants
 const tasks = Object.freeze({
@@ -62,9 +62,6 @@ function handleError(e) {
 function compileJS(source, dest) {
   "use strict";
   return gulp.src(source)
-    .pipe(babel({
-      presets: ["es2015"]
-    }))
     .on("error", handleError)
     .pipe(gulp.dest(dest));
 }
@@ -115,7 +112,7 @@ gulp.task(tasks.dev, [tasks.devSrcJS, tasks.devDemoJS, tasks.devSrcHTML, tasks.d
       port: 8000,
       livereload: true,
       directoryListing: true,
-      open: "http://localhost:8000/demo"
+      //open: "http://localhost:8000/demo"
     }));
 });
 
@@ -129,16 +126,13 @@ gulp.task(tasks.buildHTML, () =>
 
 gulp.task(tasks.buildJS, () =>
   gulp.src(paths.srcJS)
-    .pipe(babel({
-      presets: ["es2015"]
-    }))
-    .pipe(uglify())
+    .pipe(jsmin())
     .pipe(gulp.dest(paths.build))
 );
 
 gulp.task(tasks.inline, [tasks.buildHTML, tasks.buildJS], () =>
   gulp.src(paths.buildHTML)
-    .pipe(inlinesource())
+    .pipe(inlinesource({compress: false}))
     .pipe(gulp.dest(paths.build))
 );
 
