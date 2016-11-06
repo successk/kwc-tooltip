@@ -5,6 +5,31 @@
 
   const attrMargin = "margin";
   const attrDescription = "description";
+  const attrWaitBeforeShowing = "wait-before-showing";
+  const attrWaitBeforeHiding = "wait-before-hiding";
+
+  class Timeout {
+    constructor(callback, timeout) {
+      this.callback = callback;
+      this.timeout = timeout;
+    }
+
+    start() {
+      this.stop();
+      if (this.timeout) {
+        this._onTimeout = setTimeout(this.callback, this.timeout);
+      } else {
+        this.callback();
+      }
+    }
+
+    stop() {
+      if (this._onTimeout) {
+        clearTimeout(this._onTimeout);
+        this._onTimeout = null;
+      }
+    }
+  }
 
   class KwcTooltip extends HTMLElement {
     static get observedAttributes() {
@@ -14,6 +39,8 @@
     constructor() {
       super();
       this._initializeInternalDom();
+      this._timeoutForShowingDescription = new Timeout(() => this._showDescription(), this.waitBeforeShowing);
+      this._timeoutForHidingDescription = new Timeout(() => this._hideDescription(), this.waitBeforeHiding);
     }
 
     connectedCallback() {
@@ -23,6 +50,10 @@
     attributeChangedCallback(attributeName) {
       if (attributeName === attrDescription) {
         this._descriptionElement.innerHTML = this._htmlDescription;
+      } else if (attributeName === attrWaitBeforeShowing) {
+        this._timeoutForShowingDescription.timeout = this.waitBeforeShowing;
+      } else if (attributeName === attrWaitBeforeHiding) {
+        this._timeoutForHidingDescription.timeout = this.waitBeforeHiding;
       }
     }
 
@@ -35,14 +66,24 @@
 
     _initializesEvents() {
       this.addEventListener("mouseover", () => {
-        this._descriptionElement.style.display = "block";
-        const {top, left} = this._getDescriptionPosition();
-        this._descriptionElement.style.top = `${top}px`;
-        this._descriptionElement.style.left = `${left}px`;
+        this._timeoutForHidingDescription.stop();
+        this._timeoutForShowingDescription.start();
       });
       this.addEventListener("mouseout", () => {
-        this._descriptionElement.style.display = "none";
+        this._timeoutForShowingDescription.stop();
+        this._timeoutForHidingDescription.start();
       });
+    }
+
+    _showDescription() {
+      this._descriptionElement.style.display = "block";
+      const {top, left} = this._getDescriptionPosition();
+      this._descriptionElement.style.top = `${top}px`;
+      this._descriptionElement.style.left = `${left}px`;
+    }
+
+    _hideDescription() {
+      this._descriptionElement.style.display = "none";
     }
 
     _getDescriptionPosition() {
@@ -81,7 +122,11 @@
     }
 
     set margin(margin) {
-      this.setAttribute(attrMargin, margin);
+      if (margin) {
+        this.setAttribute(attrMargin, margin);
+      } else {
+        this.removeAttribute(attrMargin);
+      }
     }
 
     get description() {
@@ -89,7 +134,35 @@
     }
 
     set description(description) {
-      this.setAttribute(attrDescription, description);
+      if (description) {
+        this.setAttribute(attrDescription, description);
+      } else {
+        this.removeAttribute(attrDescription);
+      }
+    }
+
+    get waitBeforeHiding() {
+      return this.hasAttribute(attrWaitBeforeHiding) ? parseInt(this.getAttribute(attrWaitBeforeHiding), 10) : 0;
+    }
+
+    set waitBeforeHiding(waitBeforeHiding) {
+      if (waitBeforeHiding) {
+        this.setAttribute(attrWaitBeforeHiding, waitBeforeHiding);
+      } else {
+        this.removeAttribute(attrWaitBeforeHiding);
+      }
+    }
+
+    get waitBeforeShowing() {
+      return this.hasAttribute(attrWaitBeforeShowing) ? parseInt(this.getAttribute(attrWaitBeforeShowing), 10) : 0;
+    }
+
+    set waitBeforeShowing(waitBeforeShowing) {
+      if (waitBeforeShowing) {
+        this.setAttribute(attrWaitBeforeShowing, waitBeforeShowing);
+      } else {
+        this.removeAttribute(attrWaitBeforeShowing);
+      }
     }
 
     get _descriptionElement() {
